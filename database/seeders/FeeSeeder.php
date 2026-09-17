@@ -57,7 +57,7 @@ class FeeSeeder extends Seeder
             $structures[$class->id]['library'] = FeeStructure::firstOrCreate(
                 ['school_id' => $sid, 'class_id' => $class->id, 'fee_category_id' => $categories['library']->id, 'academic_year' => '2025-2026'],
                 ['amount' => 1200, 'frequency' => 'annual', 'due_date' => '2026-01-15', 'is_active' => true]
-            );
+            ); 
         }
 
         // ── Payments for first 3 classes ──────────────────────────────
