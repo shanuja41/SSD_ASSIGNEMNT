@@ -12,6 +12,7 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Validation\Rule;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -88,8 +89,16 @@ class StudentController extends Controller
             'previous_school' => 'nullable|string|max:200',
             'roll_no'         => 'nullable|string|max:50',
             // Class
-            'class_id'        => 'required|exists:classes,id',
-            'section_id'      => 'nullable|exists:sections,id',
+            'class_id'        => [
+                'required',
+                Rule::exists('classes', 'id')->where(fn ($query) => $query->where('school_id', $this->getSchoolId())),
+            ],
+            'section_id'      => [
+                'nullable',
+                Rule::exists('sections', 'id')->where(fn ($query) => $query
+                    ->where('school_id', $this->getSchoolId())
+                    ->where('class_id', $request->input('class_id'))),
+            ],
             // Guardian
             'guardian.name'       => 'required|string|max:150',
             'guardian.relation'   => 'required|string|max:50',
@@ -152,8 +161,16 @@ class StudentController extends Controller
             'admission_date'  => 'nullable|date',
             'previous_school' => 'nullable|string|max:200',
             'roll_no'         => 'nullable|string|max:50',
-            'class_id'        => 'required|exists:classes,id',
-            'section_id'      => 'nullable|exists:sections,id',
+            'class_id'        => [
+                'required',
+                Rule::exists('classes', 'id')->where(fn ($query) => $query->where('school_id', $this->getSchoolId())),
+            ],
+            'section_id'      => [
+                'nullable',
+                Rule::exists('sections', 'id')->where(fn ($query) => $query
+                    ->where('school_id', $this->getSchoolId())
+                    ->where('class_id', $request->input('class_id'))),
+            ],
             'guardian.name'       => 'required|string|max:150',
             'guardian.relation'   => 'required|string|max:50',
             'guardian.phone'      => 'nullable|string|max:20',
