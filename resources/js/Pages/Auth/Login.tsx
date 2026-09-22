@@ -29,6 +29,7 @@ interface DemoAccount {
 }
 
 interface LoginProps extends PageProps {
+    [key: string]: unknown;
     showDemo: boolean;
     demoAccounts: DemoAccount[];
 }
