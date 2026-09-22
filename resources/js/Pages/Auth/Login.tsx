@@ -228,6 +228,32 @@ export default function Login() {
                                 )}
                             </Button>
                         </form>
+
+                        {/* OR divider */}
+                        <div className="relative my-5">
+                            <div className="absolute inset-0 flex items-center">
+                                <span className="w-full border-t border-slate-200 dark:border-slate-700" />
+                            </div>
+                            <div className="relative flex justify-center text-xs uppercase">
+                                <span className="bg-white dark:bg-slate-800 px-2 text-slate-400 dark:text-slate-500">
+                                    Or
+                                </span>
+                            </div>
+                        </div>
+
+                        {/* Google OIDC sign-in */}
+                        <a
+                            href="/auth/google"
+                            className="flex items-center justify-center gap-2 w-full h-10 rounded-md border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-sm font-medium text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-700/60 transition-colors"
+                        >
+                            <svg className="w-4 h-4" viewBox="0 0 24 24">
+                                <path fill="#4285F4" d="M23.49 12.27c0-.79-.07-1.54-.19-2.27H12v4.51h6.47c-.29 1.48-1.14 2.73-2.4 3.58v2.98h3.88c2.27-2.09 3.54-5.17 3.54-8.8z" />
+                                <path fill="#34A853" d="M12 24c3.24 0 5.95-1.08 7.93-2.91l-3.88-2.98c-1.08.72-2.45 1.15-4.05 1.15-3.11 0-5.74-2.1-6.68-4.92H1.32v3.07C3.29 21.3 7.31 24 12 24z" />
+                                <path fill="#FBBC05" d="M5.32 14.34a7.2 7.2 0 010-4.68V6.59H1.32a12 12 0 000 10.82l4-3.07z" />
+                                <path fill="#EA4335" d="M12 4.75c1.76 0 3.34.6 4.58 1.79l3.44-3.44C17.94 1.19 15.24 0 12 0 7.31 0 3.29 2.7 1.32 6.59l4 3.07C6.26 6.85 8.89 4.75 12 4.75z" />
+                            </svg>
+                            Continue with Google
+                        </a>
                     </CardContent>
                 </Card>
 

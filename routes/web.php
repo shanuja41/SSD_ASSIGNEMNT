@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Auth\GoogleAuthController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\SchoolAdmin\AttendanceController;
 use App\Http\Controllers\SchoolAdmin\ExamController;
@@ -55,6 +56,14 @@ Route::middleware('guest')->group(function () {
     Route::get('/', fn () => redirect()->route('login'));
     Route::get('/login', [LoginController::class, 'create'])->name('login');
     Route::post('/login', [LoginController::class, 'store'])->middleware('throttle:login');
+
+    // "Sign in with Google" (OpenID Connect / OAuth 2.0 Authorization Code Flow).
+    Route::get('/auth/google', [GoogleAuthController::class, 'redirect'])
+        ->middleware('throttle:google-auth')
+        ->name('auth.google.redirect');
+    Route::get('/auth/google/callback', [GoogleAuthController::class, 'callback'])
+        ->middleware('throttle:google-auth')
+        ->name('auth.google.callback');
 });
 
 /*
