@@ -34,5 +34,10 @@ class AppServiceProvider extends ServiceProvider
                 Limit::perMinute(30)->by($request->ip()),
             ];
         });
+
+        // Throttle the Google OIDC redirect/callback endpoints per IP.
+        RateLimiter::for('google-auth', function (Request $request) {
+            return Limit::perMinute(15)->by($request->ip());
+        });
     }
 }
