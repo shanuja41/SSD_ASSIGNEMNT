@@ -367,7 +367,21 @@ class ReportController extends Controller
 
     public function auditLog(Request $request)
     {
+        $sid = $this->getSchoolId();
+
+        // Tenant isolation: an activity belongs to this school only if its
+        // causer is a User who belongs to this school. Activity rows have no
+        // school_id column of their own, and `properties->school_id` is never
+        // actually populated anywhere in this codebase (verified against
+        // LoginController and SuperAdmin\SchoolController, the only two
+        // places that write activity log entries) — so filtering on it would
+        // either leak everything (if omitted) or hide everything (it never
+        // matches). Scoping through the causer relation is the only
+        // mechanism that reflects real stored data.
         $logs = Activity::with('causer:id,name')
+            ->whereHasMorph('causer', [\App\Models\User::class], function ($q) use ($sid) {
+                $q->where('school_id', $sid);
+            })
             ->when($request->causer_id, fn ($q) => $q->where('causer_id', $request->causer_id))
             ->when($request->subject_type, fn ($q) => $q->where('subject_type', 'like', '%' . $request->subject_type . '%'))
             ->when($request->from_date, fn ($q) => $q->whereDate('created_at', '>=', $request->from_date))
@@ -376,7 +390,7 @@ class ReportController extends Controller
             ->paginate(50)
             ->withQueryString();
 
-        $users = \App\Models\User::where('school_id', $this->getSchoolId())
+        $users = \App\Models\User::where('school_id', $sid)
             ->orderBy('name')
             ->get(['id', 'name']);
 
