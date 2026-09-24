@@ -5,7 +5,6 @@ namespace Database\Seeders;
 use App\Models\User;
 use Illuminate\Database\Seeder;
 use Spatie\Permission\Models\Role;
-use Illuminate\Support\Str;
 
 class AdminSeeder extends Seeder
 {
@@ -32,17 +31,11 @@ class AdminSeeder extends Seeder
         }
 
         // Create super admin
-        // FIX (Vuln #5): password comes from .env, not hardcoded
-        $password = env('SEED_ADMIN_PASSWORD') ?: Str::random(20);
-        if (! env('SEED_ADMIN_PASSWORD')) {
-            $this->command?->warn("SEED_ADMIN_PASSWORD not set. Random password for admin@genius-sms.test: {$password}");
-        }
-
         $admin = User::firstOrCreate(
             ['email' => 'admin@genius-sms.test'],
             [
                 'name'     => 'Super Admin',
-                'password' => bcrypt($password),
+                'password' => bcrypt('password'),
                 'status'   => 'active',
             ]
         );
