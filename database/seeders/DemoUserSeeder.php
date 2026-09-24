@@ -9,6 +9,7 @@ use App\Models\SchoolClass;
 use App\Models\Student;
 use App\Models\User;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Str;
 
 class DemoUserSeeder extends Seeder
 {
@@ -79,13 +80,20 @@ class DemoUserSeeder extends Seeder
             ],
         ];
 
+        // FIX (Vuln #5): password comes from .env, not hardcoded in source code.
+        // If SEED_DEMO_PASSWORD is not set, a random password is generated and shown once.
+        $password = env('SEED_DEMO_PASSWORD') ?: Str::random(20);
+        if (! env('SEED_DEMO_PASSWORD')) {
+            $this->command?->warn("SEED_DEMO_PASSWORD not set. Random password for demo users: {$password}");
+        }
+
         foreach ($demoUsers as $data) {
             $user = User::firstOrCreate(
                 ['email' => $data['email']],
                 [
                     'name'      => $data['name'],
                     'school_id' => $school->id,
-                    'password'  => bcrypt('password'),
+                    'password'  => bcrypt($password),
                     'status'    => 'active',
                 ]
             );
