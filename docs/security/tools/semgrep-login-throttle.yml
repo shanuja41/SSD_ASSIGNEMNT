@@ -1,0 +1,15 @@
+rules:
+  - id: laravel-login-route-missing-throttle
+    languages: [php]
+    severity: WARNING
+    message: >-
+      Login route is registered without a `throttle` middleware. Repeated
+      password guesses are not rate limited (brute-force / credential stuffing,
+      OWASP A07:2021 - Identification and Authentication Failures, CWE-307).
+      Chain ->middleware('throttle:login') on the route.
+    metadata:
+      cwe: "CWE-307: Improper Restriction of Excessive Authentication Attempts"
+      owasp: "A07:2021 - Identification and Authentication Failures"
+    patterns:
+      - pattern: Route::post('/login', ...)
+      - pattern-not-inside: Route::post('/login', ...)->middleware('throttle:login')

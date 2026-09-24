@@ -35,4 +35,12 @@ return [
         ],
     ],
 
+    // "Sign in with Google" (OpenID Connect / OAuth 2.0 Authorization Code Flow).
+    // Credentials come from the environment only — never hard-code them here.
+    'google' => [
+        'client_id'     => env('GOOGLE_CLIENT_ID'),
+        'client_secret' => env('GOOGLE_CLIENT_SECRET'),
+        'redirect'      => env('GOOGLE_REDIRECT_URI'),
+    ],
+
 ];
