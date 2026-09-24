@@ -14,38 +14,40 @@ import { Textarea } from '@/components/ui/textarea';
 import type { PageProps, SchoolClass, Section } from '@/Types';
 
 interface Props extends PageProps {
-    classes:  Pick<SchoolClass, 'id' | 'name'>[];
+    classes: Pick<SchoolClass, 'id' | 'name'>[];
     sections: (Pick<Section, 'id' | 'name'> & { class_id: number })[];
 }
 
+const phoneRegex = /^\+?[0-9\s\-()]{7,20}$/;
+
 const schema = z.object({
     // Personal
-    first_name:      z.string().min(1, 'First name is required'),
-    last_name:       z.string().optional(),
-    gender:          z.enum(['male', 'female', 'other']),
-    date_of_birth:   z.string().optional(),
-    blood_group:     z.string().optional(),
-    religion:        z.string().optional(),
-    nationality:     z.string().optional(),
-    phone:           z.string().optional(),
-    email:           z.string().email().optional().or(z.literal('')),
-    address:         z.string().optional(),
-    category:        z.enum(['general', 'disabled', 'quota']),
-    status:          z.enum(['active', 'alumni', 'transferred', 'inactive']),
-    admission_date:  z.string().optional(),
+    first_name: z.string().min(1, 'First name is required'),
+    last_name: z.string().optional(),
+    gender: z.enum(['male', 'female', 'other']),
+    date_of_birth: z.string().optional(),
+    blood_group: z.string().optional(),
+    religion: z.string().optional(),
+    nationality: z.string().optional(),
+    phone: z.string().optional().refine(val => !val || phoneRegex.test(val), { message: 'Invalid phone number format' }),
+    email: z.string().email('Invalid email address').optional().or(z.literal('')),
+    address: z.string().optional(),
+    category: z.enum(['general', 'disabled', 'quota']),
+    status: z.enum(['active', 'alumni', 'transferred', 'inactive']),
+    admission_date: z.string().optional(),
     previous_school: z.string().optional(),
-    roll_no:         z.string().optional(),
+    roll_no: z.string().optional(),
     // Class
-    class_id:   z.coerce.number().int().positive('Select a class'),
+    class_id: z.coerce.number().int().positive('Select a class'),
     section_id: z.coerce.number().int().positive().nullable().optional(),
     // Guardian
     guardian: z.object({
-        name:       z.string().min(1, 'Guardian name is required'),
-        relation:   z.string().min(1, 'Relation is required'),
-        phone:      z.string().optional(),
-        email:      z.string().email().optional().or(z.literal('')),
+        name: z.string().min(1, 'Guardian name is required'),
+        relation: z.string().min(1, 'Relation is required'),
+        phone: z.string().optional().refine(val => !val || phoneRegex.test(val), { message: 'Invalid phone number format' }),
+        email: z.string().email('Invalid email address').optional().or(z.literal('')),
         occupation: z.string().optional(),
-        address:    z.string().optional(),
+        address: z.string().optional(),
     }),
 });
 
@@ -53,11 +55,17 @@ type FormData = z.infer<typeof schema>;
 
 const STEPS = ['Personal Info', 'Class & Roll', 'Guardian Info'];
 
+const STEP_FIELDS: (keyof FormData | `guardian.${keyof FormData['guardian']}`)[][] = [
+    ['first_name', 'last_name', 'gender', 'date_of_birth', 'blood_group', 'religion', 'nationality', 'phone', 'email', 'category', 'status', 'address'],
+    ['class_id', 'section_id', 'roll_no', 'admission_date', 'previous_school'],
+    ['guardian.name', 'guardian.relation', 'guardian.phone', 'guardian.email', 'guardian.occupation', 'guardian.address'],
+];
+
 export default function CreateStudent() {
     const { classes, sections } = usePage<Props>().props;
     const [step, setStep] = useState(0);
 
-    const { register, handleSubmit, setValue, watch, setError, formState: { errors, isSubmitting } } =
+    const { register, handleSubmit, setValue, watch, trigger, setError, formState: { errors, isSubmitting } } =
         useForm<FormData>({
             resolver: zodResolver(schema),
             defaultValues: { gender: 'male', category: 'general', status: 'active', nationality: 'Bangladeshi', guardian: { relation: 'Father' } },
@@ -65,6 +73,14 @@ export default function CreateStudent() {
 
     const selectedClassId = watch('class_id');
     const visibleSections = selectedClassId ? sections.filter((s) => s.class_id === Number(selectedClassId)) : [];
+
+    const handleNextStep = async () => {
+        const fieldsToValidate = STEP_FIELDS[step];
+        const isStepValid = await trigger(fieldsToValidate as any);
+        if (isStepValid) {
+            setStep((prev) => prev + 1);
+        }
+    };
 
     const onSubmit = (data: FormData) => {
         router.post('/school/students', data, {
@@ -76,7 +92,7 @@ export default function CreateStudent() {
         name: string; label: string; placeholder?: string; type?: string; required?: boolean;
     }) => {
         const keys = name.split('.');
-        const err  = keys.length === 2
+        const err = keys.length === 2
             ? (errors as Record<string, Record<string, { message?: string }>>)[keys[0]]?.[keys[1]]
             : (errors as Record<string, { message?: string }>)[name];
         return (
@@ -112,7 +128,11 @@ export default function CreateStudent() {
                         <div key={s} className="flex items-center gap-2">
                             <button
                                 type="button"
-                                onClick={() => i < step && setStep(i)}
+                                onClick={async () => {
+                                    if (i < step) {
+                                        setStep(i);
+                                    }
+                                }}
                                 className={`flex items-center justify-center w-7 h-7 rounded-full text-xs font-bold transition-colors ${i === step ? 'bg-indigo-600 text-white' : i < step ? 'bg-emerald-500 text-white cursor-pointer' : 'bg-slate-200 text-slate-400 dark:bg-slate-800'}`}
                             >{i + 1}</button>
                             <span className={`text-xs hidden sm:block ${i === step ? 'text-slate-900 dark:text-white font-medium' : 'text-slate-400'}`}>{s}</span>
@@ -128,7 +148,7 @@ export default function CreateStudent() {
                             <CardHeader className="pb-3"><CardTitle className="text-sm">Personal Information</CardTitle></CardHeader>
                             <CardContent className="grid grid-cols-2 gap-4">
                                 <Field name="first_name" label="First Name" placeholder="John" required />
-                                <Field name="last_name"  label="Last Name"  placeholder="Doe" />
+                                <Field name="last_name" label="Last Name" placeholder="Doe" />
                                 <div className="space-y-1.5">
                                     <Label className="text-sm font-medium">Gender <span className="text-red-500">*</span></Label>
                                     <Select defaultValue="male" onValueChange={(v) => setValue('gender', v as 'male' | 'female' | 'other')}>
@@ -142,10 +162,10 @@ export default function CreateStudent() {
                                 </div>
                                 <Field name="date_of_birth" label="Date of Birth" type="date" />
                                 <Field name="blood_group" label="Blood Group" placeholder="A+" />
-                                <Field name="religion"    label="Religion"    placeholder="Islam" />
-                                <Field name="nationality" label="Nationality"  placeholder="Bangladeshi" />
-                                <Field name="phone"       label="Phone"        placeholder="+8801700000000" />
-                                <Field name="email"       label="Email"        placeholder="student@email.com" type="email" />
+                                <Field name="religion" label="Religion" placeholder="Islam" />
+                                <Field name="nationality" label="Nationality" placeholder="Bangladeshi" />
+                                <Field name="phone" label="Phone" placeholder="+8801700000000" />
+                                <Field name="email" label="Email" placeholder="student@email.com" type="email" />
                                 <div className="space-y-1.5">
                                     <Label className="text-sm font-medium">Category</Label>
                                     <Select defaultValue="general" onValueChange={(v) => setValue('category', v as 'general' | 'disabled' | 'quota')}>
@@ -199,8 +219,8 @@ export default function CreateStudent() {
                                         </SelectContent>
                                     </Select>
                                 </div>
-                                <Field name="roll_no"         label="Roll No"       placeholder="01" />
-                                <Field name="admission_date"  label="Admission Date" type="date" />
+                                <Field name="roll_no" label="Roll No" placeholder="01" />
+                                <Field name="admission_date" label="Admission Date" type="date" />
                                 <div className="col-span-2">
                                     <Field name="previous_school" label="Previous School" placeholder="XYZ School" />
                                 </div>
@@ -213,20 +233,20 @@ export default function CreateStudent() {
                         <Card className="dark:bg-slate-900 border-slate-200 dark:border-slate-800">
                             <CardHeader className="pb-3"><CardTitle className="text-sm">Guardian Information</CardTitle></CardHeader>
                             <CardContent className="grid grid-cols-2 gap-4">
-                                <Field name="guardian.name"  label="Guardian Name" placeholder="Mr. John Doe" required />
+                                <Field name="guardian.name" label="Guardian Name" placeholder="Mr. John Doe" required />
                                 <div className="space-y-1.5">
                                     <Label className="text-sm font-medium">Relation <span className="text-red-500">*</span></Label>
                                     <Select defaultValue="Father" onValueChange={(v) => setValue('guardian.relation', v)}>
                                         <SelectTrigger className="h-9"><SelectValue /></SelectTrigger>
                                         <SelectContent>
-                                            {['Father','Mother','Guardian','Uncle','Aunt','Sibling'].map((r) => (
+                                            {['Father', 'Mother', 'Guardian', 'Uncle', 'Aunt', 'Sibling'].map((r) => (
                                                 <SelectItem key={r} value={r}>{r}</SelectItem>
                                             ))}
                                         </SelectContent>
                                     </Select>
                                 </div>
-                                <Field name="guardian.phone"      label="Phone"      placeholder="+8801700000000" />
-                                <Field name="guardian.email"      label="Email"      type="email" />
+                                <Field name="guardian.phone" label="Phone" placeholder="+8801700000000" />
+                                <Field name="guardian.email" label="Email" type="email" />
                                 <Field name="guardian.occupation" label="Occupation" placeholder="Business" />
                                 <div className="col-span-2 space-y-1.5">
                                     <Label className="text-sm font-medium">Address</Label>
@@ -242,7 +262,7 @@ export default function CreateStudent() {
                             <Button type="button" variant="outline" onClick={() => setStep(step - 1)}>Back</Button>
                         )}
                         {step < STEPS.length - 1 ? (
-                            <Button type="button" className="bg-indigo-600 hover:bg-indigo-700 text-white" onClick={() => setStep(step + 1)}>
+                            <Button type="button" className="bg-indigo-600 hover:bg-indigo-700 text-white" onClick={handleNextStep}>
                                 Next — {STEPS[step + 1]}
                             </Button>
                         ) : (
