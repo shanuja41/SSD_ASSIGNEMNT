@@ -12,63 +12,12 @@ use Inertia\Response;
 
 class LoginController extends Controller
 {
-    /**
-     * Demo accounts shown only on .test domains or xgenious.com
-     */
-    private array $demoAccounts = [
-        [
-            'role'     => 'Super Admin',
-            'email'    => 'admin@genius-sms.test',
-            'password' => 'password',
-            'color'    => 'indigo',
-        ],
-        [
-            'role'     => 'School Admin',
-            'email'    => 'school-admin@genius-sms.test',
-            'password' => 'password',
-            'color'    => 'violet',
-        ],
-        [
-            'role'     => 'Principal',
-            'email'    => 'principal@genius-sms.test',
-            'password' => 'password',
-            'color'    => 'blue',
-        ],
-        [
-            'role'     => 'Teacher',
-            'email'    => 'teacher@genius-sms.test',
-            'password' => 'password',
-            'color'    => 'sky',
-        ],
-        [
-            'role'     => 'Accountant',
-            'email'    => 'accountant@genius-sms.test',
-            'password' => 'password',
-            'color'    => 'emerald',
-        ],
-        [
-            'role'     => 'Student',
-            'email'    => 'student@genius-sms.test',
-            'password' => 'password',
-            'color'    => 'amber',
-        ],
-        [
-            'role'     => 'Parent',
-            'email'    => 'parent@genius-sms.test',
-            'password' => 'password',
-            'color'    => 'orange',
-        ],
-    ];
+    // FIX (Vuln #5): hardcoded demo accounts and plaintext passwords removed.
+    // Credentials are no longer stored in source code or sent to the browser.
 
     public function create(Request $request): Response
     {
-        $host = $request->getHost();
-        $showDemo = str_ends_with($host, '.test') || str_contains($host, 'xgenious.com');
-
-        return Inertia::render('Auth/Login', [
-            'showDemo'     => $showDemo,
-            'demoAccounts' => $showDemo ? $this->demoAccounts : [],
-        ]);
+        return Inertia::render('Auth/Login');
     }
 
     public function store(Request $request): RedirectResponse
