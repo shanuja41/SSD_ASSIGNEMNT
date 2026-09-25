@@ -1,0 +1,8 @@
+rules:
+  - id: weak-phone-validation
+    pattern: "'phone' => 'nullable|string|max:20'"
+    message: |
+      Improper Input Validation (CWE-20): 'phone' uses generic 'string|max:20' 
+      rule without format/regex constraints.
+    languages: [php]
+    severity: WARNING
