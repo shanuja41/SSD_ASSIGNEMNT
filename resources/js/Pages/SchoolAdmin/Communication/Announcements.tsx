@@ -12,8 +12,8 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '
 import { Checkbox } from '@/components/ui/checkbox';
 import { Plus, Pencil, Trash2, Pin } from 'lucide-react';
 
-interface SchoolClass  { id: number; name: string; }
-interface Author       { id: number; name: string; }
+interface SchoolClass { id: number; name: string; }
+interface Author { id: number; name: string; }
 interface Announcement {
     id: number;
     title: string;
@@ -34,8 +34,8 @@ interface PaginatedAnnouncements {
 }
 interface Props {
     announcements: PaginatedAnnouncements;
-    classes:       SchoolClass[];
-    filters:       { audience?: string };
+    classes: SchoolClass[];
+    filters: { audience?: string };
 }
 
 const emptyForm = {
@@ -48,7 +48,7 @@ const audienceColor: Record<string, 'default' | 'secondary'> = {
 };
 
 export default function Announcements({ announcements, classes, filters }: Props) {
-    const [open, setOpen]       = useState(false);
+    const [open, setOpen] = useState(false);
     const [editing, setEditing] = useState<Announcement | null>(null);
     const [filterAudience, setFilterAudience] = useState(filters.audience ?? '');
 
@@ -147,11 +147,15 @@ export default function Announcements({ announcements, classes, filters }: Props
 
                 {announcements.last_page > 1 && (
                     <div className="flex justify-center gap-1">
-                        {announcements.links.map((link, i) => (
-                            <Button key={i} size="sm" variant={link.active ? 'default' : 'outline'} disabled={!link.url}
-                                onClick={() => link.url && router.visit(link.url)}
-                                dangerouslySetInnerHTML={{ __html: link.label }} />
-                        ))}
+                        {announcements.links.map((link, i) => {
+                            const label = link.label.replace('&laquo;', '«').replace('&raquo;', '»');
+                            return (
+                                <Button key={i} size="sm" variant={link.active ? 'default' : 'outline'} disabled={!link.url}
+                                    onClick={() => link.url && router.visit(link.url)}>
+                                    {label}
+                                </Button>
+                            );
+                        })}
                     </div>
                 )}
             </div>
