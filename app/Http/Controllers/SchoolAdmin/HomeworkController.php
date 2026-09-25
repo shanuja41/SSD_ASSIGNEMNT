@@ -150,6 +150,23 @@ class HomeworkController extends Controller
 
     public function reviewLessonPlan(Request $request, LessonPlan $lessonPlan)
     {
+        // 1. Multi-Tenant Isolation (CWE-639 / IDOR prevention)
+        abort_if($lessonPlan->school_id !== $this->getSchoolId(), 403, 'Unauthorized access to school resource.');
+
+        // 2. Role Authorization (CWE-862: only management roles can approve/reject)
+        abort_unless(
+            $request->user()->hasAnyRole(['super-admin', 'school-admin', 'principal']),
+            403,
+            'Unauthorized. Only school administrators and principals can review lesson plans.'
+        );
+
+        // 3. Self-Review Prevention
+        abort_if(
+            $lessonPlan->teacher_id && $lessonPlan->teacher?->user_id === $request->user()->id,
+            403,
+            'You cannot review or approve your own lesson plan.'
+        );
+
         $data = $request->validate([
             'action'            => 'required|in:approved,rejected,submitted',
             'reviewer_feedback' => 'nullable|string|max:1000',
@@ -167,6 +184,14 @@ class HomeworkController extends Controller
 
     public function destroyLessonPlan(LessonPlan $lessonPlan)
     {
+        // Multi-Tenant and Role Authorization check
+        abort_if($lessonPlan->school_id !== $this->getSchoolId(), 403);
+        abort_unless(
+            auth()->user()->hasAnyRole(['super-admin', 'school-admin', 'principal']),
+            403,
+            'Unauthorized. Only school administrators and principals can delete lesson plans.'
+        );
+
         $lessonPlan->delete();
         return back()->with('success', 'Lesson plan deleted.');
     }
