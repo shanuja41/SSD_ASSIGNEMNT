@@ -24,10 +24,6 @@ A comprehensive, open-source School Management System built with **Laravel 11 + 
 - **OAuth/OpenID Connect authentication:** The same video also demonstrates the authentication implementation.
 - **YouTube video :** Add the video link here.
 
-
-## License
-
-
 ## Links
 
 | | |
