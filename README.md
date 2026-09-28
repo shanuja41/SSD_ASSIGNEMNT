@@ -1,4 +1,7 @@
-# Genius School Management System
+# SE4030 - Secure Software Development
+# Group: SLIIT - Northern Uni, Group 2
+
+## Genius School Management System
 
 A comprehensive, open-source School Management System built with **Laravel 11 + Inertia.js + React (TypeScript)**.
 
