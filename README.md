@@ -2,6 +2,31 @@
 
 A comprehensive, open-source School Management System built with **Laravel 11 + Inertia.js + React (TypeScript)**.
 
+## Project Submission
+
+### Team Members
+
+| Index | Student ID | Name |
+|---:|---|---|
+| 1 | IT23181274 | I. Naganarthanan |
+| 2 | IT23231382 | K. Shanuja |
+| 3 | IT23166974 | P. Thirishnavi |
+| 4 | IT23167414 | K. Mathusan |
+
+### Repository Links
+
+- **Original project:** [Genius School Management System](https://github.com/XgeniousLLC/genius-school-management-system)
+- **Modified project:** [SSD Assignment](https://github.com/shanuja41/SSD_ASSIGNEMNT.git)
+
+### Security Changes and Demonstration
+
+- **Vulnerabilities identified and fixes:** Document the vulnerabilities found and the corresponding fixes implemented in this repository.
+- **OAuth/OpenID Connect implementation video (maximum 20 minutes):** Add the YouTube link here.
+
+
+## License
+
+
 ## Links
 
 | | |
@@ -68,3 +93,5 @@ php artisan serve
 ## License
 
 Open-source software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+
+
