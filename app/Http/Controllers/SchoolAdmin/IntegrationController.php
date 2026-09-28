@@ -91,7 +91,9 @@ class IntegrationController extends Controller
 
             return back()->with('success', 'Test email sent to ' . $request->test_email);
         } catch (\Throwable $e) {
-            return back()->with('error', 'SMTP test failed: ' . $e->getMessage());
+            report($e);
+
+            return back()->with('error', 'SMTP test failed.');
         }
     }
 
@@ -137,7 +139,9 @@ class IntegrationController extends Controller
                 throw new \RuntimeException('Vonage SDK not installed. Add vonage/client to composer.json.');
             }
         } catch (\Throwable $e) {
-            return back()->with('error', 'SMS test failed: ' . $e->getMessage());
+            report($e);
+
+            return back()->with('error', 'SMS test failed. Please verify the SMS settings and try again.');
         }
     }
 }
