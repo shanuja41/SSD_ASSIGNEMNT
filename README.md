@@ -20,8 +20,9 @@ A comprehensive, open-source School Management System built with **Laravel 11 + 
 
 ### Security Changes and Demonstration
 
-- **Vulnerabilities identified and fixes:** Document the vulnerabilities found and the corresponding fixes implemented in this repository.
-- **OAuth/OpenID Connect implementation video (maximum 20 minutes):** Add the YouTube link here.
+- **Vulnerabilities and fixes:** The demonstration video covers the vulnerabilities identified in this repository and the fixes implemented for them.
+- **OAuth/OpenID Connect authentication:** The same video also demonstrates the authentication implementation.
+- **YouTube video :** Add the video link here.
 
 
 ## License
