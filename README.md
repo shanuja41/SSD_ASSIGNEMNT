@@ -2,8 +2,6 @@
 
 A comprehensive, open-source School Management System built with **Laravel 11 + Inertia.js + React (TypeScript)**.
 
-## Project Submission
-
 ### Team Members
 
 | Index | Student ID | Name |
@@ -22,7 +20,7 @@ A comprehensive, open-source School Management System built with **Laravel 11 + 
 
 - **Vulnerabilities and fixes:** The demonstration video covers the vulnerabilities identified in this repository and the fixes implemented for them.
 - **OAuth/OpenID Connect authentication:** The same video also demonstrates the authentication implementation.
-- **YouTube video :** Add the video link here.
+- **YouTube video :**[Video](https://youtu.be/mMAsM5xnOnI)
 
 ## Links
 
